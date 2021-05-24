@@ -17,7 +17,8 @@ cd ./ffmpeg-3.3.3-64bit-static/; sudo cp ffmpeg ffprobe /usr/local/bin;
 * 下载预训练的模型 [pretrained model](https://drive.google.com/drive/folders/1zvl89AgFAApbH0At-gMuZSeQB_LpNP-M?usp=sharing).  
   * ResNeXt-101 表现最好. (See [paper](https://arxiv.org/abs/1711.09577) in details.)
   * 对于上述的3D-ResNeXt-101模型，如果输入的视频段的shape是(C, D, H, W)，经过多层conv和pooling，  
-  输出的视频段shape将是(2048, D / 16, H / 32, W / 32)
+  输出的视频段shape将是(2048, D / 16, H / 32, W / 32). 但到最后由于有一个avgpooling操作，将输出一个  
+  2048维的单一向量作为3D motion feature
 
 ## Usage
 假设视频都放在 ```./videos```文件夹下.
