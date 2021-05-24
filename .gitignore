@@ -101,3 +101,13 @@ ENV/
 .mypy_cache/
 
 .DS_Store
+
+# after modify
+.idea/
+checkpoints/
+observe_hdf5.py
+observe_pkl.py
+output.pkl
+store/
+videos/
+.input

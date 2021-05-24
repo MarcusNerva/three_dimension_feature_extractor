@@ -1,16 +1,9 @@
-# Video Classification Using 3D ResNet
-This is a pytorch code for video (action) classification using 3D ResNet trained by [this code](https://github.com/kenshohara/3D-ResNets-PyTorch).  
-The 3D ResNet is trained on the Kinetics dataset, which includes 400 action classes.  
-This code uses videos as inputs and outputs class names and predicted class scores for each 16 frames in the score mode.  
-In the feature mode, this code outputs features of 512 dims (after global average pooling) for each 16 frames.  
-
-**Torch (Lua) version of this code is available [here](https://github.com/kenshohara/video-classification-3d-cnn).**
+# 三维特征提取
+该项目是在 [this code](https://github.com/kenshohara/3D-ResNets-PyTorch) 基础上修改而来的  
+有两种模式:feature mode 和 score mode. 可以先在score mode下测试一下模型的有效性，然后再在feature mode下提取视频的三维特征。
 
 ## Requirements
-* [PyTorch](http://pytorch.org/)
-```
-conda install pytorch torchvision cuda80 -c soumith
-```
+* [PyTorch](http://pytorch.org/)   
 * FFmpeg, FFprobe
 ```
 wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz
@@ -20,33 +13,23 @@ cd ./ffmpeg-3.3.3-64bit-static/; sudo cp ffmpeg ffprobe /usr/local/bin;
 * Python 3
 
 ## Preparation
-* Download this code.
-* Download the [pretrained model](https://drive.google.com/drive/folders/1zvl89AgFAApbH0At-gMuZSeQB_LpNP-M?usp=sharing).  
-  * ResNeXt-101 achieved the best performance in our experiments. (See [paper](https://arxiv.org/abs/1711.09577) in details.)
+* git clone 该项目代码
+* 下载预训练的模型 [pretrained model](https://drive.google.com/drive/folders/1zvl89AgFAApbH0At-gMuZSeQB_LpNP-M?usp=sharing).  
+  * ResNeXt-101 表现最好. (See [paper](https://arxiv.org/abs/1711.09577) in details.)
+  * 对于上述的3D-ResNeXt-101模型，如果输入的视频段的shape是(C, D, H, W)，经过多层conv和pooling，  
+  输出的视频段shape将是(2048, D / 16, H / 32, W / 32)
 
 ## Usage
-Assume input video files are located in ```./videos```.
+假设视频都放在 ```./videos```文件夹下.
 
-To calculate class scores for each 16 frames, use ```--mode score```.
+采取 ```--mode score```，即可计算出视频中每一个分片的动作类别.
 ```
-python main.py --input ./input --video_root ./videos --output ./output.json --model ./resnet-34-kinetics.pth --mode score
+python main.py --video_dir $(your videos dir) --save_dir $(your save dir) --model $(checkpoints path) --mode score
 ```
-To visualize the classification results, use ```generate_result_video/generate_result_video.py```.
 
-To calculate video features for each 16 frames, use ```--mode feature```.
+为了计算每16帧的特征, 使用 ```--mode feature```.
 ```
 python main.py --input ./input --video_root ./videos --output ./output.json --model ./resnet-34-kinetics.pth --mode feature
 ```
 
 
-## Citation
-If you use this code, please cite the following:
-```
-@article{hara3dcnns,
-  author={Kensho Hara and Hirokatsu Kataoka and Yutaka Satoh},
-  title={Can Spatiotemporal 3D CNNs Retrace the History of 2D CNNs and ImageNet?},
-  journal={arXiv preprint},
-  volume={arXiv:1711.09577},
-  year={2017},
-}
-```

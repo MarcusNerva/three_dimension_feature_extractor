@@ -59,6 +59,7 @@ def generate_model(opt):
                                      sample_size=opt.sample_size, sample_duration=opt.sample_duration,
                                      last_fc=last_fc)
         elif opt.model_depth == 101:
+            print('='*20, 'i am in', '='*20)
             model = resnext.resnet101(num_classes=opt.n_classes, shortcut_type=opt.resnet_shortcut, cardinality=opt.resnext_cardinality,
                                       sample_size=opt.sample_size, sample_duration=opt.sample_duration,
                                       last_fc=last_fc)

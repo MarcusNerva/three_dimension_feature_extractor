@@ -5,6 +5,7 @@ import os
 import math
 import functools
 import copy
+import json
 
 
 def pil_loader(path):
@@ -79,10 +80,8 @@ def get_video_names_and_annotations(data, subset):
     return video_names, annotations
 
 
-def make_dataset(video_path, sample_duration):
+def make_dataset(video_path, n_frames, sample_duration, step):
     dataset = []
-
-    n_frames = len(os.listdir(video_path))
 
     begin_t = 1
     end_t = n_frames
@@ -92,7 +91,6 @@ def make_dataset(video_path, sample_duration):
         'n_frames': n_frames,
     }
 
-    step = sample_duration
     for i in range(1, (n_frames - sample_duration + 1), step):
         sample_i = copy.deepcopy(sample)
         sample_i['frame_indices'] = list(range(i, i + sample_duration))
@@ -103,10 +101,12 @@ def make_dataset(video_path, sample_duration):
 
 
 class Video(data.Dataset):
-    def __init__(self, video_path,
+    def __init__(self, video_path, frames,
                  spatial_transform=None, temporal_transform=None,
-                 sample_duration=16, get_loader=get_default_video_loader):
-        self.data = make_dataset(video_path, sample_duration)
+                 sample_duration=16, step=5, get_loader=get_default_video_loader):
+        self.frames = frames
+        self.data = make_dataset(video_path, len(frames), sample_duration, step)
+        self.frames = frames
 
         self.spatial_transform = spatial_transform
         self.temporal_transform = temporal_transform
@@ -124,10 +124,11 @@ class Video(data.Dataset):
         frame_indices = self.data[index]['frame_indices']
         if self.temporal_transform is not None:
             frame_indices = self.temporal_transform(frame_indices)
-        clip = self.loader(path, frame_indices)
+        # clip = self.loader(path, frame_indices)
+        clip = [self.frames[idx] for idx in frame_indices]
         if self.spatial_transform is not None:
             clip = [self.spatial_transform(img) for img in clip]
-        clip = torch.stack(clip, 0).permute(1, 0, 2, 3)
+        clip = torch.stack(clip, 0).permute(1, 0, 2, 3)  # (C, D, H, W)
 
         target = self.data[index]['segment']
 
